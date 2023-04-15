@@ -1,0 +1,1668 @@
+openapi: 3.0.3
+info:
+  title: Massar.net
+  description: '**list of the massar.net api**'
+  contact:
+    email: admin@massar.net
+  version: 1.0.0
+servers:
+  - url: https://api.massar.net/v1
+  - url: http://localhost:3000
+tags:
+  - name: Universities
+  - name: Institutes
+  - name: Users
+  - name: Search
+    description: Filter, Search , Sort information
+  - name: Airports 
+    description: The airport endpoint has been categorized into two distinct subcategories, each serving a specific purpose.The first category involves the implementation of CRUD operations for the creation of airports and the addition of location details to them.
+      The second category pertains to the creation of a price tag that connects an airport to a city.At the front end, users are able to search through a list of existing cities in the city table and search for a list of existing airports in the airport table. Subsequently, users can set up the pricing structure.
+  - name: Blogs
+  - name: Tags
+  
+paths:
+  /institutes:
+    get:
+      tags:
+        - Institutes
+      parameters:
+        - name: institute
+          in: query
+          description: specific institute name for filter
+          required: false
+          explode: true
+          schema:
+            type: string
+            example: The Language Academy
+        - name: from
+          in: query
+          description: starting point for retrive date [start from zero] 
+          required: false
+          schema:
+            type: integer
+            default: 0
+            example: 0
+        - name: to
+          in: query
+          description: end point for retrive date [start from zero]
+          required: false
+          schema:
+            type: integer
+            default: 25
+            example: 25
+      responses:
+        '200':
+          description: success 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Institute'
+    post:
+      tags:
+        - Institutes
+      requestBody:
+        $ref: '#/components/requestBodies/Institute'
+      responses:
+        '201':
+          description: successfully created
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InstituteMinimam' 
+  /institutes/{instituteID}:
+    put:
+      tags:
+        - Institutes
+      parameters:
+        - name: instituteID
+          in: path
+          description: ID of the institute to edit 
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        $ref: '#/components/requestBodies/Institute'
+      responses:
+        '201':
+          description: successfully updated
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/InstituteMinimam'
+    delete:
+      tags:
+        - Institutes
+      description: Delete an Institutes
+      parameters: 
+        - name: instituteID
+          in: path
+          description: ID of the institute delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: recored deleted successfully 
+  /institutes/{instituteID}/locations:
+    get:
+      tags:
+        - Institutes
+      parameters:
+        - name: instituteID
+          in: path
+          description: ID of the institutes we going to list the location for
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: return list of location
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Location'
+    post:
+      tags: 
+        - Institutes
+      parameters:
+          - name: instituteID
+            in: path
+            description: ID of the institutes we going to list the location for
+            required: true
+            schema:
+              type: integer
+      requestBody:
+        $ref: '#/components/requestBodies/Location'
+      responses:
+        '201':
+          description: return newly created location
+          content:
+              application/json:
+                schema:
+                    $ref: '#/components/schemas/Location'
+  /institutes/locations/{locationID}:
+    put:
+      tags: 
+        - Institutes
+      parameters:
+        - name: locationID
+          in: path
+          description: ID of the institutes we going to list the location for
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        $ref: '#/components/requestBodies/Location'
+      responses:
+        '204':
+          description: return newly created location
+          content:
+              application/json:
+                schema:
+                    $ref: '#/components/schemas/Location'
+    delete:
+      tags: 
+        - Institutes
+      parameters:
+        - name: locationID
+          in: path
+          description: ID of the institutes we going to list the location for
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: recored deleted successfully
+  /institutes/{instituteID}/courses:
+    get:
+      tags:
+        - Institutes
+      parameters:
+        - name: instituteID
+          in: path
+          description: ID of the institute to add the course to
+          required: true
+          schema:
+            type: integer
+        - name: course
+          in: query
+          description: specific course name for filter
+          required: false
+          explode: true
+          schema:
+            type: string
+            example: english cours
+        - name: limits
+          in: query
+          description: amount of institute returen
+          required: false
+          schema:
+            type: integer
+            minimum: 10
+            maximum: 100
+            example: 50
+      responses:
+        '200':
+          description: return list of courses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+    post:
+      tags: 
+       - Institutes
+      summary: Add a new course
+      parameters:
+        - name: instituteID
+          in: path
+          description: ID of the institute to add the course to
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        $ref: '#/components/requestBodies/Course'
+      responses:
+        '200':
+          description: returen the created the course
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Course'  
+  /institutes/courses/{courseID}:
+    put:
+      tags: 
+       - Institutes
+      summary: Edite the course 
+      parameters: 
+       - name: courseID
+         in: path 
+         description: ID of the course to add the course to
+         required: true
+         schema:
+          type: integer
+      requestBody:
+       $ref: '#/components/requestBodies/CourseWithoutcourseSession'
+      responses:
+        '204':
+          description: updated 
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/CourseWithoutcourseSession'
+    delete:
+      tags:
+       - Institutes
+      summary: delete the course ID
+      parameters: 
+       - name: courseID
+         in: path 
+         description: ID of the course to add the course to
+         required: true
+         schema:
+          type: integer
+      responses:
+        '204':
+          description: recored deleted successfully
+  /institutes/courses/{courseID}/sessions:
+    get:
+      tags:
+        - Institutes
+      parameters: 
+         - name: courseID
+           in: path 
+           description: ID of the course to add the course to
+           required: true
+           schema:
+            type: integer
+      responses:
+        '201':
+          description: edited inofrmation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    retention:
+                      type: string
+                      format: enum
+                      example: weekly
+                      enum:
+                        - Weekly
+                        - Daily
+                        - Monthly
+                        - Yearly
+                    dayOfWeek:
+                      type: string
+                      format: enum
+                      example: Mon
+                      enum:
+                        - Mon
+                        - Tue
+                        - Web
+                        - The
+                        - Fri
+                        - Sun
+                        - Sat
+    post:
+      tags:
+        - Institutes
+      parameters: 
+         - name: courseID
+           in: path 
+           description: ID of the course to add the course to
+           required: true
+           schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                retention:
+                  type: string
+                  format: enum
+                  example: weekly
+                  enum:
+                    - Weekly
+                    - Daily
+                    - Monthly
+                    - Yearly
+                dayOfWeek:
+                  type: string
+                  format: enum
+                  example: Mon
+                  enum:
+                    - Mon
+                    - Tue
+                    - Web
+                    - The
+                    - Fri
+                    - Sun
+                    - Sat
+      responses:
+        '201':
+          description: edited inofrmation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  retention:
+                    type: string
+                    format: enum
+                    example: weekly
+                    enum:
+                      - Weekly
+                      - Daily
+                      - Monthly
+                      - Yearly
+                  dayOfWeek:
+                    type: string
+                    format: enum
+                    example: Mon
+                    enum:
+                      - Mon
+                      - Tue
+                      - Web
+                      - The
+                      - Fri
+                      - Sun
+                      - Sat
+  /institutes/courses/session/{sessionID}:
+    put:
+      tags:
+        - Institutes
+      summary: Edite course session 
+      parameters: 
+       - name: sessionID
+         in: path 
+         description: ID of the session edite
+         required: true
+         schema:
+          type: integer
+      requestBody:
+       $ref: '#/components/requestBodies/CourseSession'
+      responses:
+        '204':
+          description: updated 
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/CourseSession'
+    delete:
+      tags:
+        - Institutes
+      parameters: 
+       - name: sessionID
+         in: path 
+         description: ID of the session edite
+         required: true
+         schema:
+          type: integer
+      responses:
+        '204':
+          description: deleted successfully
+  /institutes/{instituteID}/media:
+    get:
+      tags: 
+        - Institutes
+      parameters: 
+        - name: instituteID
+          in: path
+          description: ID of the institute to add the course to
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: get the media files
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Media'
+    post:
+      tags: 
+        - Institutes
+      parameters: 
+        - name: instituteID
+          in: path
+          description: ID of the institute to add the course to
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        $ref: '#/components/requestBodies/Media'
+      responses:
+        '200':
+          description: get the media files
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Media'
+  /institutes/media/{mediaID}:
+    delete:
+      tags: 
+        - Institutes
+      parameters: 
+       
+        - name: mediaID
+          in: path
+          description: ID of the media of the Institutes
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: deleted 
+    put:
+      tags: 
+        - Institutes
+      parameters: 
+        - name: mediaID
+          in: path
+          description: ID of the media of the Institutes
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        $ref: '#/components/requestBodies/Media'
+      responses:
+        '200':
+          description: get the media files
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Media'
+  /airports:
+    get:
+      tags:
+        - Airports
+      parameters: 
+        - name: name
+          in: query
+          description: an airport name for search
+          required: false
+          schema:
+           type: string
+           example: King Abdulaziz International Airport
+        - name: from
+          in: query
+          description: limit the output result 
+          required: false
+          schema:
+            type: integer
+            example: 50
+        - name: to
+          in: query
+          description: The  page required
+          required: false
+          schema:
+            type: integer
+            example: 2
+      responses:
+        '200':
+          description: retrive airport information
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                    $ref: '#/components/schemas/Airport'
+    post:
+      tags: 
+        - Airports
+      requestBody:
+        $ref: '#/components/requestBodies/Airport'
+      responses:
+        '200':
+          description: retrive airport information
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                    $ref: '#/components/schemas/Airport'                    
+  /airports/{airportID}:
+    put:
+      tags:
+        - Airports
+      parameters: 
+        - name: airportID
+          in: path
+          description: Airport ID
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        $ref: '#/components/requestBodies/Airport'
+      responses: 
+        '201':
+          description: retrive airport information
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                    $ref: '#/components/schemas/Airport'
+    delete:
+      tags:
+        - Airports
+      parameters: 
+        - name: airportID
+          in: path
+          description: Airport ID
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '204':
+          description: Airports deleted 
+  /airports/{airportID}/escorts:
+    get:
+      tags:
+        - Airports
+      parameters: 
+        - name: airportID
+          in: path
+          description: escort prices to each city
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - name: city
+          in: query
+          description: specify the city you want
+          required: false
+          schema:
+            type: string
+            example: jeddah
+        
+      responses:
+        '200':
+          description: retrive escorts information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  airport:
+                    type: string
+                    example: King Abdulaziz International Airport
+                  escorts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Escort'
+    post:
+      tags:
+        - Airports
+      parameters:
+        - name: airportID
+          in: path
+          description: escort prices to each city
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        $ref: '#/components/requestBodies/Escort'
+      responses:
+        '201':
+          description: retrive escorts information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  airport:
+                    type: string
+                    example: King Abdulaziz International Airport
+                  escorts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Escort'
+  /airports/escorts/{escortID}:
+    put:
+      tags:
+        - Airports
+      parameters: 
+        - name: escortID
+          in: path
+          description: the escort id
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        $ref: '#/components/requestBodies/Escort'
+      responses: 
+        '201':
+          description: update information on prices 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                    $ref: '#/components/schemas/Escort'
+    delete:
+      tags:
+        - Airports
+      parameters: 
+        - name: escortID
+          in: path
+          description: the escort id
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '204':
+          description: escort deleted successfully
+  /blogs:
+    get:
+      tags:
+        - Blogs
+      description: get list of blog 
+      parameters:
+        - name: blog
+          in: query
+          description: search of a blog titel
+          required: false
+          explode: true
+          schema:
+            type: string
+            example: bug fix
+        - name: from
+          in: query
+          description: starting point for retrive date [start from zero] 
+          required: false
+          schema:
+            type: integer
+            default: 0
+            example: 0
+        - name: to
+          in: query
+          description: end point for retrive date [start from zero]
+          required: false
+          schema:
+            type: integer
+            default: 25
+            example: 25
+      responses:
+        '200':
+          description: List of the blogs retrieve
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                    $ref: '#/components/schemas/Blog'
+    post:
+      tags:
+        - Blogs
+      description: Here is a new blog comming 
+      requestBody:
+        $ref: '#/components/requestBodies/Blog'
+      responses:
+        '201':
+          description: The data of the bolg added
+          content:
+            application/json:
+              schema:
+                    $ref: '#/components/schemas/Blog'
+  /blogs/{blogID}:
+    put:
+      tags:
+        - Blogs
+      description: When sending a PUT request with a list of tags, it's important to ensure that the tags being sent match the existing list of tags. For example, if a blog has the tags [1, 2, 3], and you receive a PUT request with tags [3, 4], you must delete all references to the old tags [1, 2, 3] and update the list with the new tags [3, 4]. This will ensure that the tags are consistent and up-to-date.
+      parameters:
+        - name: blogID
+          in: path
+          required: true
+          schema:
+            type: integer 
+            example: 1
+      requestBody:
+          $ref: '#/components/requestBodies/Blog'
+      responses:
+        '201':
+          description: The data of the bolg edited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Blog'
+    delete:
+      tags:
+        - Blogs
+      parameters:
+        - name: blogID
+          in: path
+          required: true
+          schema:
+            type: integer 
+            example: 1
+      responses:
+        '204':
+          description: blog not here any more
+  /tags:
+    get:
+      tags:
+        - Tags
+      parameters:
+        - name: tag
+          in: query
+          description: Search for specific tags 
+          required: false
+          explode: true
+          schema:
+            type: string
+            example: Engineering 
+        - name: from
+          in: query
+          description: starting point for retrive date [start from zero] 
+          required: false
+          schema:
+            type: integer
+            default: 0
+            example: 0
+        - name: to
+          in: query
+          description: end point for retrive date [start from zero]
+          required: false
+          schema:
+            type: integer
+            default: 25
+            example: 25
+      responses:
+        '200':
+          description: success 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+    post:
+      tags:
+        - Tags
+      requestBody:
+        $ref: '#/components/requestBodies/Tag'
+      responses:
+        '201':
+          description: the new tag created 
+          content:
+            application/json:
+              schema:
+                    $ref: '#/components/schemas/Tag'
+  /tags/{tagID}:
+    put:
+      tags:
+        - Tags
+      parameters: 
+        - name: tagID
+          in: path
+          required: true
+          schema:
+            type: integer 
+            example: 1 
+      requestBody:
+        $ref: '#/components/requestBodies/Tag'
+      responses:
+        '201':
+          description: The data of the tag edited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+    delete:
+      tags:
+        - Tags
+      parameters: 
+        - name: tagID
+          in: path
+          required: true
+          schema:
+            type: integer 
+            example: 1
+      responses:
+        '204':
+          description: tag deleted 
+  
+      
+          
+components:
+  schemas:
+    Location:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        continent:
+          type: string
+          enum:
+           - Asia
+           - Africa
+           - North America
+           - South America
+           - Antarctica
+           - Europe
+           - Australia
+        country:
+          type: string 
+          example: Malaysia
+        state:
+          type: string
+          example: slengor
+        city:
+          type: string
+          example: KL
+        latitude:
+          type: string
+          example: 3.048993328506416
+        longitude:
+          type: string
+          example: 101.75869766154973
+    LocationWithoutID:
+      type: object
+      properties:
+        continent:
+          type: string
+          enum:
+           - Asia
+           - Africa
+           - North America
+           - South America
+           - Antarctica
+           - Europe
+           - Australia
+        country:
+          type: string 
+          example: Malaysia
+        state:
+          type: string
+          example: Selangor
+        city:
+          type: string
+          example: KL
+        latitude:
+          type: string
+          example: 3.048993328506416
+        longitude:
+          type: string
+          example: 101.75869766154973
+    Course:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int4
+          example: 1
+        course:
+          type: string
+          format: varchar
+          example: general english language proficiency
+        courseType:
+          type: string
+          description: Course type
+          example: normal
+          enum:
+            - normal
+            - concentration
+        courseSpeciality:
+          type: string
+          description: what the course focues on
+          example: reading
+          enum:
+            - full
+            - reading
+            - writing
+            - listing 
+            - speaking
+            - professional exam 
+        houerPerWeek:
+          type: integer
+          description: how many hours a week
+          example: 20
+        pricePerWeek:
+          type: number
+          format: floot
+          description: price per week
+          example: 400
+        totalWeeks:
+          type: number
+          format: int4
+          description: totall number of weeks for the course (if any)
+          example: 14 
+        studyLevel:
+          type: string
+          example: beginner
+          enum:
+            - beginner
+            - intermediate
+            - advance
+        avargeStudentClass:
+          type: number
+          description: avarge student per a class 
+          format: int4
+          example: 20
+        minimumAge:
+          type: integer
+          description: mimimum age to enter the class
+          example: 16
+        discountPercentage:
+          type: number
+          description: apply a discount on the course X%
+          format: float
+          example: 7
+        bookCost:
+          type: number 
+          format: float
+          example: 100.5
+        courseLanguges:
+          type: string
+          format: TEXT
+          example: English
+        studyTime:
+          type: string
+          format: TEXT
+          example: Morning
+        maxStudPerClass:
+          type: integer
+          example: 16
+        registrationCost:
+          type: number
+          format: float
+          example: 240 
+        courseSession:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 1
+              retention:
+                type: string
+                format: enum
+                example: weekly
+                enum:
+                  - Weekly
+                  - Daily
+                  - Monthly
+                  - Yearly
+              dayOfWeek:
+                type: string
+                format: enum
+                example: Mon
+                enum:
+                  - Mon
+                  - Tue
+                  - Web
+                  - The
+                  - Fri
+                  - Sun
+                  - Sat
+    CourseWithoutcourseSession:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int4
+          example: 1
+        course:
+          type: string
+          format: varchar
+          example: general english language proficiency
+        courseType:
+          type: string
+          description: Course type
+          example: normal
+          enum:
+            - normal
+            - concentration
+        courseSpeciality:
+          type: string
+          description: what the course focues on
+          example: reading
+          enum:
+            - full
+            - reading
+            - writing
+            - listing 
+            - speaking
+            - professional exam 
+        houerPerWeek:
+          type: integer
+          description: how many hours a week
+          example: 20
+        pricePerWeek:
+          type: number
+          format: floot
+          description: price per week
+          example: 400
+        totalWeeks:
+          type: number
+          format: int4
+          description: totall number of weeks for the course (if any)
+          example: 14 
+        studyLevel:
+          type: string
+          example: beginner
+          enum:
+            - beginner
+            - intermediate
+            - advance
+        avargeStudentClass:
+          type: number
+          description: avarge student per a class 
+          format: int4
+          example: 20
+        minimumAge:
+          type: integer
+          description: mimimum age to enter the class
+          example: 16
+        discountPercentage:
+          type: number
+          description: apply a discount on the course X%
+          format: float
+          example: 7
+        bookCost:
+          type: number 
+          format: float
+          example: 100.5
+        courseLanguges:
+          type: string
+          format: TEXT
+          example: English
+        studyTime:
+          type: string
+          format: TEXT
+          example: Morning
+        maxStudPerClass:
+          type: integer
+          example: 16
+        registrationCost:
+          type: number
+          format: float
+          example: 240 
+    CourseSession:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        retention:
+          type: string
+          format: enum
+          example: weekly
+          enum:
+            - Weekly
+            - Daily
+            - Monthly
+            - Yearly
+        dayOfWeek:
+          type: string
+          format: enum
+          example: Mon
+          enum:
+            - Mon
+            - Tue
+            - Web
+            - The
+            - Fri
+            - Sun
+            - Sat
+    Institute:
+      required:
+        - id
+        - name
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int4
+          example: 1
+        institution:
+          type: string
+          example: Stratford International Language Centre
+        post:
+          type: string
+          example: blablabla
+        registrationCost:
+          type: number
+          format: float
+          example: 50.5
+        airportEscort:
+          type: boolean
+          example: true
+        insuranceCost:
+          type: number
+          format: float
+          example: 120.5
+        mediaFiles:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 1
+              mediaType:
+                type: string
+                enum:
+                  - pic
+                  - vid
+                example: vid
+              url:
+                type: string
+                example: https://www.youtube.com/watch?v=tQg_-2ncQog
+        location:
+          type: array
+          items:
+            $ref: '#/components/schemas/Location'
+    InstituteMinimam:
+      required:
+        - id
+        - name
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int4
+          example: 1
+        institution:
+          type: string
+          example: Stratford International Language Centre
+        post:
+          type: string
+          example: blablabla
+        registrationCost:
+          type: number
+          format: float
+          example: 50.5
+        airportEscort:
+          type: boolean
+          example: true
+        insuranceCost:
+          type: number
+          format: float
+          example: 120.5
+    Media:
+      required: 
+        - mediaType
+        - url
+      type: object
+      properties:
+       id:
+        type: integer
+       mediaType:
+        type: string
+        example: pic
+       url:
+        type: string
+        example: https://editor.swagger.io/
+    MediaWithOutID:
+      required: 
+        - mediaType
+        - url
+      type: object
+      properties:
+       mediaType:
+        type: string
+        example: pic
+       url:
+        type: string
+        example: https://editor.swagger.io/
+    Airport:
+      type: object
+      properties:
+        id:
+         type: integer
+        airport:
+          type: string
+          example: King Abdulaziz International Airport
+        location:
+          $ref: '#/components/schemas/Location'
+    AirportWithoutID:
+      type: object
+      properties:
+        airport:
+          type: string
+          example: King Abdulaziz International Airport
+        location:
+          $ref: '#/components/schemas/LocationWithoutID'
+    Escort:
+      type: object
+      properties:
+        id:
+          type: integer
+        city:
+          type: string
+          example: jeddah
+        cityID:
+          type: integer
+        price:
+          type: number
+          format: float
+          example: 50.5
+    EscortWithoutID:
+      type: object
+      properties:
+        city:
+          type: string
+          example: jeddah
+        price:
+          type: number
+          format: float
+          example: 50.5
+    Blog:
+      type: object
+      properties:
+        id:
+          type: integer 
+          example: 1
+        titel: 
+          type: string 
+          format: varchar
+          example: "our next new feature"
+        body:
+          type: string
+          example: "bla bla bla .. this is the body of the blog"
+        timeStamp:
+          type: string
+          format: date-time
+          example: "2020-10-10 00:00:00"
+        owner:
+          type: string 
+          format: uuid-v4
+          example: "6528abb3-5a98-4b33-9e98-68fcf9e88169"
+        tags:
+          type: array
+          items:
+            type: integer
+            example:
+            - 3
+            - 4
+            - 5
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        tag:
+          type: string
+          example: managment 
+          
+          
+        
+  requestBodies:
+    Institute:
+      required: true
+      content:
+        application/json:
+          schema:
+            required:
+              - name
+            type: object
+            properties:
+              institution:
+                type: string
+                example: Stratford International Language Centre
+              post:
+                type: string
+                example: blablabla
+              registrationCost:
+                type: number
+                format: float
+                example: 50.5
+              airportEscort:
+                type: boolean
+                example: true
+              insuranceCost:
+                type: number
+                format: float
+                example: 120.5
+    Location:
+      required: true
+      content:
+        application/json:
+          schema:
+            required: 
+              - latitude
+              - longitude
+              - city
+              - country
+            $ref: '#/components/schemas/LocationWithoutID'
+    Course:
+      required: true
+      content:
+       application/json:
+        schema:
+          required: 
+            - course
+          type: object
+          properties:
+            course:
+              type: string
+              format: varchar
+              example: general english language proficiency
+            courseType:
+              type: string
+              description: Course type
+              example: normal
+              enum:
+                - normal
+                - concentration
+            courseSpeciality:
+              type: string
+              description: what the course focues on
+              example: reading
+              enum:
+                - full
+                - reading
+                - writing
+                - listing 
+                - speaking
+                - professional exam 
+            houerPerWeek:
+              type: integer
+              description: how many hours a week
+              example: 20
+            pricePerWeek:
+              type: number
+              format: floot
+              description: price per week
+              example: 400
+            totalWeeks:
+              type: number
+              format: int4
+              description: totall number of weeks for the course (if any)
+              example: 14 
+            studyLevel:
+              type: string
+              example: beginner
+              enum:
+                - beginner
+                - intermediate
+                - advance
+            avargeStudentClass:
+              type: number
+              description: avarge student per a class 
+              format: int4
+              example: 20
+            minimumAge:
+              type: integer
+              description: mimimum age to enter the class
+              example: 16
+            discountPercentage:
+              type: number
+              description: apply a discount on the course X%
+              format: float
+              example: 7
+            bookCost:
+              type: number 
+              format: float
+              example: 100.5
+            courseLanguges:
+              type: string
+              format: TEXT
+              example: English
+            studyTime:
+              type: string
+              format: TEXT
+              example: Morning
+            maxStudPerClass:
+              type: integer
+              example: 16
+            registrationCost:
+              type: number
+              format: float
+              example: 240 
+            courseSession:
+              type: array
+              items:
+                type: object
+                properties:
+                  retention:
+                    type: string
+                    format: enum
+                    example: weekly
+                    enum:
+                      - Weekly
+                      - Daily
+                      - Monthly
+                      - Yearly
+                  dayOfWeek:
+                    type: string
+                    format: enum
+                    example: Mon
+                    enum:
+                      - Mon
+                      - Tue
+                      - Web
+                      - The
+                      - Fri
+                      - Sun
+                      - Sat
+    CourseWithoutcourseSession:
+      required: true
+      content:
+       application/json:
+        schema:
+          required: 
+            - course
+          type: object
+          properties:
+            course:
+              type: string
+              format: varchar
+              example: general english language proficiency
+            courseType:
+              type: string
+              description: Course type
+              example: normal
+              enum:
+                - normal
+                - concentration
+            courseSpeciality:
+              type: string
+              description: what the course focues on
+              example: reading
+              enum:
+                - full
+                - reading
+                - writing
+                - listing 
+                - speaking
+                - professional exam 
+            houerPerWeek:
+              type: integer
+              description: how many hours a week
+              example: 20
+            pricePerWeek:
+              type: number
+              format: floot
+              description: price per week
+              example: 400
+            totalWeeks:
+              type: number
+              format: int4
+              description: totall number of weeks for the course (if any)
+              example: 14 
+            studyLevel:
+              type: string
+              example: beginner
+              enum:
+                - beginner
+                - intermediate
+                - advance
+            avargeStudentClass:
+              type: number
+              description: avarge student per a class 
+              format: int4
+              example: 20
+            minimumAge:
+              type: integer
+              description: mimimum age to enter the class
+              example: 16
+            discountPercentage:
+              type: number
+              description: apply a discount on the course X%
+              format: float
+              example: 7
+            bookCost:
+              type: number 
+              format: float
+              example: 100.5
+            courseLanguges:
+              type: string
+              format: TEXT
+              example: English
+            studyTime:
+              type: string
+              format: TEXT
+              example: Morning
+            maxStudPerClass:
+              type: integer
+              example: 16
+            registrationCost:
+              type: number
+              format: float
+              example: 240 
+    CourseSession:
+      required: true
+      content:
+       application/json:
+        schema:
+          required: 
+            - course
+          type: object
+          properties:
+            retention:
+              type: string
+              format: enum
+              example: weekly
+              enum:
+                - Weekly
+                - Daily
+                - Monthly
+                - Yearly
+            dayOfWeek:
+              type: string
+              format: enum
+              example: Mon
+              enum:
+                - Mon
+                - Tue
+                - Web
+                - The
+                - Fri
+                - Sun
+                - Sat
+    Media:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MediaWithOutID'
+    Airport:
+      required: true
+      content:
+        application/json:
+          schema:
+            required:
+              - airport
+              - location
+            $ref: '#/components/schemas/AirportWithoutID'
+    Escort:
+      required: true
+      content:
+        application/json:
+          schema: 
+            $ref: '#/components/schemas/EscortWithoutID'
+    Blog:
+      required: true
+      content:
+        application/json:
+          schema:
+            required:
+               - titel
+               - body
+               - owner
+            type: object
+            properties:
+              titel: 
+                type: string 
+                format: varchar
+                example: "our next new feature"
+              body:
+                type: string
+                example: "bla bla bla .. this is the body of the blog"
+              timeStamp:
+                type: string
+                format: date-time
+                example: "2020-10-10 00:00:00"
+              owner:
+                type: string 
+                format: uuid-v4
+                example: "6528abb3-5a98-4b33-9e98-68fcf9e88169"
+              tags:
+                type: array
+                items:
+                  type: integer
+                  example:
+                  - 3
+                  - 4
+                  - 5
+    Tag:
+      required: true
+      content:
+        application/json:
+          schema:
+            required:
+               - tag  
+            type: object
+            properties:
+              tag:
+                type: string
+                example: managment 
+              
+  securitySchemes:
+    petstore_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
+          scopes:
+            write:pets: modify pets in your account
+            read:pets: read your pets
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
